@@ -1,13 +1,6 @@
-import ast
-import astunparse
+from redbaron import RedBaron
 import sys
 import getopt
-
-
-class TestNodeTransformer(ast.NodeTransformer):
-    def visit_FunctionDef(self, node):
-        print(node.name)
-        return node
 
 
 def read_input_code(input_file):
@@ -60,12 +53,8 @@ def main():
 
     content = read_input_code(input_file)
 
-    p = ast.parse(content)
-    p = TestNodeTransformer().visit(p)
-    s = astunparse.unparse(p)
-    print(astunparse.dump(p))
-
-    write_output_code(output_file, s)
+    ast = RedBaron(content)
+    write_output_code(output_file, ast.dumps())
 
 
 if __name__ == '__main__':
