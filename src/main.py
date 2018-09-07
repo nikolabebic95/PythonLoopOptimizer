@@ -2,6 +2,8 @@ from redbaron import RedBaron
 import sys
 import getopt
 
+from src.optimize import *
+
 
 def read_input_code(input_file):
     if input_file == "":
@@ -53,8 +55,9 @@ def main():
 
     content = read_input_code(input_file)
 
-    ast = RedBaron(content)
-    write_output_code(output_file, ast.dumps())
+    root = RedBaron(content)
+    optimize(root)
+    write_output_code(output_file, root.dumps())
 
 
 if __name__ == '__main__':
