@@ -1,7 +1,7 @@
-from redbaron import *
+from redbaron import Node
 
 
-def optimize(root: Node):
+def optimize(root: Node) -> None:
     # For loops
     for_loops = root.find_all('for')
     for for_loop in for_loops:

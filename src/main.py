@@ -1,11 +1,12 @@
+from io import TextIOWrapper
 from redbaron import RedBaron
 import sys
 import getopt
 
-from src.optimize import *
+from src.optimize import optimize
 
 
-def read_input_code(input_file):
+def read_input_code(input_file: str) -> str:
     if input_file == "":
         return sys.stdin.read()
     else:
@@ -13,7 +14,7 @@ def read_input_code(input_file):
             return input_file_handle.read()
 
 
-def write_output_code(output_file, code):
+def write_output_code(output_file: str, code: str) -> None:
     if output_file == "":
         sys.stdout.write(code)
         sys.stdout.flush()
@@ -23,18 +24,18 @@ def write_output_code(output_file, code):
             output_file_handle.flush()
 
 
-def print_usage(out_file):
+def print_usage(out_file: TextIOWrapper) -> None:
     out_file.write("Usage: TODO\n")
     out_file.flush()
 
 
-def main():
+def main() -> None:
     # region Parse command line
 
     input_file = ""
     output_file = ""
 
-    opts, args = getopt.getopt(sys.argv[1:], "i:o:h", ["--input=", "--output", "--help"])
+    opts, args = getopt.getopt(sys.argv[1:], "i:o:h", ["input=", "output=", "help"])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
