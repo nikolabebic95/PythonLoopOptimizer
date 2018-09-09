@@ -1,6 +1,28 @@
-from redbaron import ForNode, WhileNode
+from redbaron import ForNode, WhileNode, Node
 
 from src.utils import uses_iterator, is_range_for, has_continue
+
+
+def get_range_params(range_node: Node) -> (str, str, str):
+    print(range_node.help())
+    start = '0'
+    end = '1'
+    step = '1'
+
+    if len(range_node) == 1:
+        end = range_node[0].value.dumps()
+    if len(range_node) == 2:
+        start = range_node[0].value.dumps()
+        end = range_node[1].value.dumps()
+    if len(range_node) == 3:
+        start = range_node[0].value.dumps()
+        end = range_node[1].value.dumps()
+        step = range_node[2].value.dumps()
+
+    start = '(' + start + ')'
+    end = '(' + end + ')'
+    step = '(' + step + ')'
+    return start, end, step
 
 
 def unroll_for_prologue(loop: ForNode, n: int) -> None:
@@ -27,6 +49,9 @@ def unroll_for(loop: ForNode, n: int) -> None:
 
     if has_continue(loop):
         return
+
+    start, end, step = get_range_params(loop.target[1])
+    print(start, end, step)
 
     # TODO: Determine if N is a constant
     unroll_for_prologue(loop, n)

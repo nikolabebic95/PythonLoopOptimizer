@@ -1,20 +1,50 @@
 a = 10
 b = 20
 
-for i in range(a % 5):
+for i in range(a % 10):
     print('Hello')
     if a < b:
         pass
     c = 30
     d = 40
 
-for i in range(a // 5):
+for i in range(a // 10):
     print('Hello')
     if a < b:
         pass
     c = 30
     d = 40
 
+    print('Hello')
+    if a < b:
+        pass
+    
+    c = 30
+    d = 40
+    print('Hello')
+    if a < b:
+        pass
+    
+    c = 30
+    d = 40
+    print('Hello')
+    if a < b:
+        pass
+    
+    c = 30
+    d = 40
+    print('Hello')
+    if a < b:
+        pass
+    
+    c = 30
+    d = 40
+    print('Hello')
+    if a < b:
+        pass
+    
+    c = 30
+    d = 40
     print('Hello')
     if a < b:
         pass
