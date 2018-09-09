@@ -1,73 +1,28 @@
-a = 10
-b = 20
-
-for i in range(a % 10):
+def f():
     print('Hello')
-    if a < b:
-        pass
-    c = 30
-    d = 40
-
-for i in range(a // 10):
+    print('World')
+n = 45
+for i in range(n % 10):
     print('Hello')
-    if a < b:
-        pass
-    c = 30
-    d = 40
-
+    print('World')
+for i in range(n // 10):
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
+    print('World')
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
+    print('World')
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
+    print('World')
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
+    print('World')
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
+    print('World')
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
+    print('World')
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
+    print('World')
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
+    print('World')
     print('Hello')
-    if a < b:
-        pass
-    
-    c = 30
-    d = 40
-while a < b:
-    a += 10
+    print('World')
+    print('Hello')
+    print('World')

@@ -1,5 +1,6 @@
 from redbaron import Node
 
+from src.inline import inline_loop
 from src.unroll import unroll_for
 
 
@@ -8,6 +9,7 @@ def optimize(root: Node) -> None:
     for_loops = root.find_all('for')
     for for_loop in for_loops:
         # TODO: Do not hardcode 10
+        inline_loop(for_loop, root)
         unroll_for(for_loop, 10)
 
     # While loops
