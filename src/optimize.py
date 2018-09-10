@@ -10,9 +10,9 @@ def optimize(root: Node) -> None:
     for for_loop in for_loops:
         # TODO: Do not hardcode 10
         inline_loop(for_loop, root)
-        unroll_for(for_loop, 10)
+        # unroll_for(for_loop, 10)
 
     # While loops
     while_loops = root.find_all('while')
     for while_loop in while_loops:
-        pass
+        inline_loop(while_loop, root)
