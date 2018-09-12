@@ -10,7 +10,7 @@ def lcg_random(seed, a, c, m, n):
 
 def main():
     argc = len(sys.argv)
-    n = 1_000_000
+    n = 10_000_000
     seed = 0
     a = 1664525
     c = 1013904223

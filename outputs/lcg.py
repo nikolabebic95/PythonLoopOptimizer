@@ -3,9 +3,9 @@ import time
 
 
 def lcg_random(seed, a, c, m, n):
-    for i in range(n % 10):
+    for i in range((0), ((0) + (((n) - (0)) // (1)) % 10), (1)):
         seed = (a * seed + c) % m
-    for i in range(n // 10):
+    for i in range(((0) + (((n) - (0)) // (1)) % 10), (n), (1) * 10):
         seed = (a * seed + c) % m
         seed = (a * seed + c) % m
         seed = (a * seed + c) % m
@@ -21,7 +21,7 @@ def lcg_random(seed, a, c, m, n):
 
 def main():
     argc = len(sys.argv)
-    n = 1_000_000
+    n = 10_000_000
     seed = 0
     a = 1664525
     c = 1013904223

@@ -1,6 +1,8 @@
 from redbaron import Node, NameNode, WhileNode, CallNode, DefNode
 from typing import List, Set, Dict
 
+from src.utils import rename_variables
+
 
 # RedBaron does not support type annotations, but this code should work
 # even when RerBaron supports them
@@ -53,14 +55,6 @@ def create_parameters_mapping(formal_parameters: List[str], actual_parameters: L
     for i in range(len(formal_parameters)):
         ret[formal_parameters[i]] = actual_parameters[i]
     return ret
-
-
-def rename_variables(func: DefNode, mapping: Dict[str, str]) -> None:
-    nodes = func.value.find_all('name')
-    for node in nodes:
-        if node.value not in mapping:
-            continue
-        node.value = mapping[node.value]
 
 
 def clone_function_with_variables(func: DefNode, mapping: Dict[str, str]) -> DefNode:
