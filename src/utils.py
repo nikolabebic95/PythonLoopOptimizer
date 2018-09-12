@@ -3,7 +3,8 @@ from typing import Dict
 import re
 
 
-NUMBER_REGEX = re.compile('^\s*\(?\s*(\d+)\s*\)?\s*$')
+NUMBER_REGEX = re.compile('^\s*\(?\s*(-?\d+)\s*\)?\s*$')
+VARIABLE_OR_NUMBER_REGEX = re.compile('^\s*\(?\s*(-?[a-zA-Z0-9_]+)\s*\)?\s*$')
 
 
 def has_node_type(loop: Node, node_type: str) -> bool:
@@ -50,3 +51,11 @@ def is_constant(expression: str) -> bool:
 
 def get_constant(expression: str) -> int:
     return int(NUMBER_REGEX.sub('\\1', expression))
+
+
+def is_var_or_num(expression: str) -> bool:
+    return VARIABLE_OR_NUMBER_REGEX.search(expression) is not None
+
+
+def get_var_or_num(expression: str) -> str:
+    return VARIABLE_OR_NUMBER_REGEX.sub('\\1', expression)
