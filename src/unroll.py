@@ -103,7 +103,7 @@ def build_range_expression(n: int, start: str, end: str, step: str):
     if is_constant(step):
         step_string = str(get_constant(step) * n)
 
-    if is_constant(start) and get_constant(start) == 0 and is_constant(step_string) and get_constant(step_string) == 0:
+    if is_constant(start) and get_constant(start) == 0 and is_constant(step_string) and get_constant(step_string) == 1:
         return 'range(' + end + ')'
     elif is_constant(step_string) and get_constant(step_string) == 1:
         return 'range(' + start + ', ' + end + ')'
