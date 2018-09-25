@@ -12,6 +12,7 @@ def f(a, x, y, z):
     lst[0] = 1
     for j in lst:
         pass
+    return b
 
 
 while abc < n:
@@ -24,6 +25,7 @@ while abc < n:
     lst[0] = 1
     for j in lst:
         pass
+    c = 1 + 2 + b_
 
 
     print(n)

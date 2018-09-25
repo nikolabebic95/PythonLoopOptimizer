@@ -83,3 +83,9 @@ def get_single_line_from_function(func: DefNode) -> Node:
     if isinstance(line, ReturnNode):
         return line.value
     return line
+
+
+def get_scope_level_ancestor(node: Node) -> Node:
+    while not isinstance(node.parent.value, LineProxyList):
+        node = node.parent
+    return node

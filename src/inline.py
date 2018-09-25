@@ -1,8 +1,8 @@
-from redbaron import Node, NameNode, WhileNode, CallNode, DefNode
+from redbaron import Node, NameNode, WhileNode, CallNode, DefNode, AtomtrailersNode
 from typing import List, Set, Dict
 
 from src.utils import rename_variables, is_in_global_scope, remove_node, is_single_line_function, \
-    get_single_line_from_function
+    get_single_line_from_function, get_scope_level_ancestor
 
 
 # RedBaron does not support type annotations, but this code should work
@@ -80,8 +80,30 @@ def fix_global_keyword_in_global_scope(loop: Node, cloned_function: DefNode):
             remove_node(g)
 
 
-def inline_single_line_function(loop: Node, cloned_function: DefNode):
-    pass
+def inline_lines(scope_level_node: Node, cloned_function: DefNode) -> None:
+    parent = scope_level_node.parent
+    index_on_parent = scope_level_node.index_on_parent
+    remove_node(scope_level_node)
+
+    for index, item in enumerate(cloned_function.value):
+        parent.insert(index_on_parent + index, item)
+
+
+def inline_multiline_function(atomtrailer: AtomtrailersNode, cloned_function: DefNode) -> None:
+    return_nodes = cloned_function.find_all('return')
+    if len(return_nodes) == 0:
+        print(cloned_function.value.dumps())
+        atomtrailer.replace(cloned_function.value.dumps())
+        return
+
+    scope_level_node = get_scope_level_ancestor(atomtrailer)
+
+    for return_node in return_nodes:
+        atomtrailer.replace(return_node.value)
+        copy_of_scope_level_node = scope_level_node.copy()
+        return_node.replace(copy_of_scope_level_node)
+
+    inline_lines(scope_level_node, cloned_function)
 
 
 def inline_loop(loop: Node, root: Node) -> None:
@@ -112,12 +134,5 @@ def inline_loop(loop: Node, root: Node) -> None:
         if is_single_line_function(cloned_function):
             atomtrailer.replace(get_single_line_from_function(cloned_function))
         else:
-            remove_node(atomtrailer)
-            parent = atomtrailer.parent
-            index_on_parent = atomtrailer.index_on_parent
-            parent.remove(parent[index_on_parent])
-
             fix_global_keyword_in_global_scope(loop, cloned_function)
-
-            for index, item in enumerate(cloned_function.value):
-                parent.insert(index_on_parent + index, item)
+            inline_multiline_function(atomtrailer, cloned_function)

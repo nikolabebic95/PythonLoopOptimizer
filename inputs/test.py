@@ -12,11 +12,12 @@ def f(a, x, y, z):
     lst[0] = 1
     for j in lst:
         pass
+    return b
 
 
 while abc < n:
     a = 10
     b = 10
-    f(a + 1, 2, 3, 4)
+    c = 1 + 2 + f(a + 1, 2, 3, 4)
     print(n)
     abc = 1000
