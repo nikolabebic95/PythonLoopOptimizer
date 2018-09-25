@@ -6,7 +6,7 @@ def f(n):
     s = 0
     for i in range(2, n):
         for j in range(2, i):
-            if is_factor(i, j):
+            if (i) % (j) == 0:
                 break
         else:
             s += 1

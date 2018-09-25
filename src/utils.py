@@ -1,4 +1,4 @@
-from redbaron import Node, ForNode, DefNode
+from redbaron import Node, ForNode, DefNode, EndlNode, LineProxyList, ReturnNode
 from typing import Dict
 import re
 
@@ -67,3 +67,19 @@ def is_in_global_scope(node: Node) -> bool:
 
 def remove_node(node: Node) -> None:
     node.parent.remove(node.parent.value[node.index_on_parent])
+
+
+def get_lines_from_scope(scope: LineProxyList):
+    return [line for line in scope if not isinstance(line, EndlNode)]
+
+
+def is_single_line_function(func: DefNode) -> bool:
+    lines = get_lines_from_scope(func.value)
+    return len(lines) == 1
+
+
+def get_single_line_from_function(func: DefNode) -> Node:
+    line = get_lines_from_scope(func.value)[0]
+    if isinstance(line, ReturnNode):
+        return line.value
+    return line

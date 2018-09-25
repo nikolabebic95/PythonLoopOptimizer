@@ -1,11 +1,12 @@
 from redbaron import Node, NameNode, WhileNode, CallNode, DefNode
 from typing import List, Set, Dict
 
-from src.utils import rename_variables, is_in_global_scope, remove_node
+from src.utils import rename_variables, is_in_global_scope, remove_node, is_single_line_function, \
+    get_single_line_from_function
 
 
 # RedBaron does not support type annotations, but this code should work
-# even when RerBaron supports them
+# even when RedBaron supports them
 # https://github.com/PyCQA/baron/issues/127#issue-270939120
 def get_all_parameters_as_list(func: DefNode) -> List[str]:
     return [name.value for name in func.arguments.find_all('name')]
@@ -79,6 +80,10 @@ def fix_global_keyword_in_global_scope(loop: Node, cloned_function: DefNode):
             remove_node(g)
 
 
+def inline_single_line_function(loop: Node, cloned_function: DefNode):
+    pass
+
+
 def inline_loop(loop: Node, root: Node) -> None:
     # TODO: Solve problem when there is too much endlines and redbaron puts wrong indentation
     atomtrailers = loop.value.find_all('atomtrailers')
@@ -104,11 +109,15 @@ def inline_loop(loop: Node, root: Node) -> None:
         mapping = create_name_clashes_mapping(func_local_vars, names_in_loop_scope)
         rename_variables(cloned_function, mapping)
 
-        parent = atomtrailer.parent
-        index_on_parent = atomtrailer.index_on_parent
-        parent.remove(parent[index_on_parent])
+        if is_single_line_function(cloned_function):
+            atomtrailer.replace(get_single_line_from_function(cloned_function))
+        else:
+            remove_node(atomtrailer)
+            parent = atomtrailer.parent
+            index_on_parent = atomtrailer.index_on_parent
+            parent.remove(parent[index_on_parent])
 
-        fix_global_keyword_in_global_scope(loop, cloned_function)
+            fix_global_keyword_in_global_scope(loop, cloned_function)
 
-        for index, item in enumerate(cloned_function.value):
-            parent.insert(index_on_parent + index, item)
+            for index, item in enumerate(cloned_function.value):
+                parent.insert(index_on_parent + index, item)
