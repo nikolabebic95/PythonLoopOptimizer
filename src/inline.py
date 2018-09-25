@@ -1,7 +1,7 @@
 from redbaron import Node, NameNode, WhileNode, CallNode, DefNode
 from typing import List, Set, Dict
 
-from src.utils import rename_variables
+from src.utils import rename_variables, is_in_global_scope, remove_node
 
 
 # RedBaron does not support type annotations, but this code should work
@@ -72,6 +72,13 @@ def create_name_clashes_mapping(func_local_vars: Set[str], loop_scope_names: Set
     return ret
 
 
+def fix_global_keyword_in_global_scope(loop: Node, cloned_function: DefNode):
+    if is_in_global_scope(loop):
+        global_keywords = cloned_function.find_all('global')
+        for g in global_keywords:
+            remove_node(g)
+
+
 def inline_loop(loop: Node, root: Node) -> None:
     # TODO: Solve problem when there is too much endlines and redbaron puts wrong indentation
     atomtrailers = loop.value.find_all('atomtrailers')
@@ -100,6 +107,8 @@ def inline_loop(loop: Node, root: Node) -> None:
         parent = atomtrailer.parent
         index_on_parent = atomtrailer.index_on_parent
         parent.remove(parent[index_on_parent])
+
+        fix_global_keyword_in_global_scope(loop, cloned_function)
 
         for index, item in enumerate(cloned_function.value):
             parent.insert(index_on_parent + index, item)

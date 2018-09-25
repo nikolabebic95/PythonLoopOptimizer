@@ -1,4 +1,4 @@
-from redbaron import Node, ForNode
+from redbaron import Node, ForNode, DefNode
 from typing import Dict
 import re
 
@@ -59,3 +59,11 @@ def is_var_or_num(expression: str) -> bool:
 
 def get_var_or_num(expression: str) -> str:
     return VARIABLE_OR_NUMBER_REGEX.sub('\\1', expression)
+
+
+def is_in_global_scope(node: Node) -> bool:
+    return node.parent_find('def') is None
+
+
+def remove_node(node: Node) -> None:
+    node.parent.remove(node.parent.value[node.index_on_parent])
