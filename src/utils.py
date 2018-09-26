@@ -98,3 +98,7 @@ def insert(scope: Node, exp: Node, index: int) -> None:
 def is_recursive(func: DefNode) -> bool:
     name_node = func.value.find('name', value=func.name)
     return name_node is not None and isinstance(name_node.parent, AtomtrailersNode)
+
+
+def is_generator(func: DefNode) -> bool:
+    return func.find('yield') is not None

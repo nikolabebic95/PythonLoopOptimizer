@@ -2,7 +2,7 @@ from redbaron import Node, NameNode, WhileNode, CallNode, DefNode, AtomtrailersN
 from typing import List, Set, Dict
 
 from src.utils import rename_variables, is_in_global_scope, remove_node, is_single_line_function, \
-    get_single_line_from_function, get_scope_level_ancestor, insert, is_recursive
+    get_single_line_from_function, get_scope_level_ancestor, insert, is_recursive, is_generator
 
 
 # RedBaron does not support type annotations, but this code should work
@@ -125,6 +125,9 @@ def inline_loop(loop: Node, root: Node) -> None:
             continue
 
         if is_recursive(definition):
+            continue
+
+        if is_generator(definition):
             continue
 
         actual_parameters = get_all_actual_parameters(atomtrailer.value[1])
