@@ -1,14 +1,6 @@
 import numpy as np
-# from numba import guvectorize, float64
 import math
 from time import time
-
-
-# @guvectorize([(float64[:, :], float64[:, :])], '(n, m)->(n, m)')
-def f(in_mat, out_mat):
-    for i in range(len(in_mat)):
-        for j in range(len(out_mat)):
-            out_mat[i, j] = math.sin(in_mat[i, j])
 
 
 def main():
@@ -18,7 +10,9 @@ def main():
 
     start = time()
 
-    f(in_mat, out_mat)
+    for i in range(len(in_mat)):
+        for j in range(len(out_mat)):
+            out_mat[i, j] = math.sin(in_mat[i, j])
 
     end = time()
     print(end - start)

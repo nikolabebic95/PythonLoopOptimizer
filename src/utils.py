@@ -12,6 +12,10 @@ def has_node_type(loop: Node, node_type: str) -> bool:
     return loop.find(node_type) is not None
 
 
+def has_parent_type(node: Node, parent_type: str) -> bool:
+    return node.parent_find(parent_type) is not None
+
+
 def has_node_type_and_value(loop: Node, node_type: str, node_value: str) -> bool:
     return loop.find(node_type, value=node_value) is not None
 
@@ -88,6 +92,12 @@ def get_single_line_from_function(func: DefNode) -> Node:
 
 def get_scope_level_ancestor(node: Node) -> Node:
     while not isinstance(node.parent.value, LineProxyList):
+        node = node.parent
+    return node
+
+
+def get_top_level_ancestor(node: Node) -> Node:
+    while node.parent.parent is not None:
         node = node.parent
     return node
 
