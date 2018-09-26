@@ -4,7 +4,9 @@ import math
 from time import time
 
 
-# comment
+# WARNING!!! This code assumes that all types passed to this function are floats.
+# If the actual types are not all float64, you must edit the 'guvectorize' decorator.
+# The order of the types in the decorator is the same as the order of the function parameters
 @numba.guvectorize([(numba.float64[:, :], numba.float64[:, :])], '(n, m)->(n, m)')
 def cuda_kernel_from_line_13(in_mat, out_mat):
     for i in range(len(in_mat)):

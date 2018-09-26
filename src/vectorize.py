@@ -1,7 +1,14 @@
-from redbaron import Node, ForNode, DefNode, RedBaron, NameNode, CallNode, AtomtrailersNode
+from redbaron import Node, ForNode, DefNode, RedBaron, NameNode, CallNode, AtomtrailersNode, GetitemNode
 from typing import List
 
 from src.utils import has_parent_type, get_top_level_ancestor
+
+
+WARNING_MESSAGE = [
+    '# WARNING!!! This code assumes that all types passed to this function are floats.\n',
+    '# If the actual types are not all float64, you must edit the \'guvectorize\' decorator.\n',
+    '# The order of the types in the decorator is the same as the order of the function parameters\n'
+]
 
 
 def add_import(root: Node) -> None:
@@ -37,6 +44,39 @@ def get_all_variables(func: DefNode) -> List[str]:
     return [value for value in ret] + [last_param]
 
 
+def get_dimension(func: DefNode, variable: str) -> int:
+    occurrences = func.value.find_all('name', value=variable)
+    ret = 0
+    for occurrence in occurrences:
+        parent = occurrence.parent
+        if isinstance(parent, AtomtrailersNode) and isinstance(parent[-1], GetitemNode):
+            dimension = len(parent[-1].value.value)
+            if dimension > ret:
+                ret = dimension
+    return ret
+
+
+def build_decorator(func: DefNode, variables: List[str]) -> str:
+    types = []
+    sizes = []
+
+    index = ord('a')
+    default_type = 'float64'
+
+    for variable in variables:
+        dimension = get_dimension(func, variable)
+        if dimension > 0:
+            variable_types = 'numba.' + default_type + '[' + ', '.join(':' * dimension) + ']'
+        else:
+            variable_types = 'numba.' + default_type
+        types.append(variable_types)
+        chars = [chr(i) for i in range(index, index + dimension)]
+        index = index + dimension
+        sizes.append('(' + ', '.join(chars) + ')')
+
+    return '@numba.guvectorize([(' + ', '.join(types) + ')], \'' + ', '.join(sizes[:-1]) + '->' + sizes[-1] + '\')'
+
+
 def build_function(loop: ForNode) -> DefNode:
     name = 'cuda_kernel_from_line_' + str(loop.absolute_bounding_box.top_left.line)
     baron = RedBaron('def ' + name + '():\n    pass\n')
@@ -47,6 +87,8 @@ def build_function(loop: ForNode) -> DefNode:
 
     variables = get_all_variables(ret)
     ret.arguments = ', '.join(variables)
+
+    print(build_decorator(ret, variables))
 
     return ret
 
@@ -63,7 +105,8 @@ def vectorize_loop(loop: ForNode, root: Node):
     parent = ancestor.parent
     index_on_parent = ancestor.index_on_parent
     parent.insert(index_on_parent, func)
-    parent.insert(index_on_parent, '# comment')
+    for m in reversed(WARNING_MESSAGE):
+        parent.insert(index_on_parent, m)
 
     index = loop.index_on_parent
     p = loop.parent
