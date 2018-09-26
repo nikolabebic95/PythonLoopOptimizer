@@ -2,7 +2,7 @@ from redbaron import Node, NameNode, WhileNode, CallNode, DefNode, AtomtrailersN
 from typing import List, Set, Dict
 
 from src.utils import rename_variables, is_in_global_scope, remove_node, is_single_line_function, \
-    get_single_line_from_function, get_scope_level_ancestor
+    get_single_line_from_function, get_scope_level_ancestor, insert, is_recursive
 
 
 # RedBaron does not support type annotations, but this code should work
@@ -86,7 +86,7 @@ def inline_lines(scope_level_node: Node, cloned_function: DefNode) -> None:
     remove_node(scope_level_node)
 
     for index, item in enumerate(cloned_function.value):
-        parent.insert(index_on_parent + index, item)
+        insert(parent, item, index_on_parent + index)
 
 
 def inline_multiline_function(atomtrailer: AtomtrailersNode, cloned_function: DefNode) -> None:
@@ -97,6 +97,9 @@ def inline_multiline_function(atomtrailer: AtomtrailersNode, cloned_function: De
         return
 
     scope_level_node = get_scope_level_ancestor(atomtrailer)
+
+    if scope_level_node.on_attribute != 'value':
+        return
 
     for return_node in return_nodes:
         atomtrailer.replace(return_node.value)
@@ -119,6 +122,9 @@ def inline_loop(loop: Node, root: Node) -> None:
         definition = root.find('def', name=name)
 
         if definition is None:
+            continue
+
+        if is_recursive(definition):
             continue
 
         actual_parameters = get_all_actual_parameters(atomtrailer.value[1])

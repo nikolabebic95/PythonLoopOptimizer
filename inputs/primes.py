@@ -1,5 +1,6 @@
 def is_factor(a, b):
-    return a % b == 0
+    x = a % b
+    return x == 0
 
 
 def f(n):

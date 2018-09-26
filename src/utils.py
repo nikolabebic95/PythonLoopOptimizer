@@ -1,4 +1,4 @@
-from redbaron import Node, ForNode, DefNode, EndlNode, LineProxyList, ReturnNode
+from redbaron import Node, ForNode, DefNode, EndlNode, LineProxyList, ReturnNode, AtomtrailersNode
 from typing import Dict
 import re
 
@@ -89,3 +89,12 @@ def get_scope_level_ancestor(node: Node) -> Node:
     while not isinstance(node.parent.value, LineProxyList):
         node = node.parent
     return node
+
+
+def insert(scope: Node, exp: Node, index: int) -> None:
+    scope.insert(index, exp)
+
+
+def is_recursive(func: DefNode) -> bool:
+    name_node = func.value.find('name', value=func.name)
+    return name_node is not None and isinstance(name_node.parent, AtomtrailersNode)
