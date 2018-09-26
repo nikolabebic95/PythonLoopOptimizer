@@ -10,8 +10,8 @@ def main():
 
     start = time()
 
-    for i in range(len(in_mat)):
-        for j in range(len(out_mat)):
+    for i in range(in_mat.shape[0]):
+        for j in range(in_mat.shape[1]):
             out_mat[i, j] = math.sin(in_mat[i, j])
 
     end = time()

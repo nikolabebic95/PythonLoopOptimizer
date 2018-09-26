@@ -5,9 +5,16 @@ from src.utils import has_parent_type, get_top_level_ancestor
 
 
 WARNING_MESSAGE = [
-    '# WARNING!!! This code assumes that all types passed to this function are floats.\n',
-    '# If the actual types are not all float64, you must edit the \'guvectorize\' decorator.\n',
+    '# WARNING!!!\n'
+    '# This code assumes that all types passed to this function are floats.\n',
+    '# If the actual types are not all float64, you must edit the corresponding '
+    ' value in the \'guvectorize\' decorator.\n',
     '# The order of the types in the decorator is the same as the order of the function parameters\n'
+]
+
+SHAPE_MESSAGE = [
+    '# This function also assumes the shape of the output array\n',
+    '# If the shape is not correct, it must be corrected by the user\n'
 ]
 
 
@@ -20,9 +27,15 @@ def get_all_variables(func: DefNode) -> List[str]:
 
     atomtrailers = func.value.find_all('atomtrailers')
     for atomtrailer in atomtrailers:
-        for name in [node for node in atomtrailer.value[:-1] if isinstance(atomtrailer.value[-1], CallNode)]:
-            if name.value in ret:
-                ret.remove(name.value)
+        if isinstance(atomtrailer.value[-1], CallNode):
+            for name in [node for node in atomtrailer.value[:-1]]:
+                if name.value in ret:
+                    ret.remove(name.value)
+        else:
+            if len(atomtrailer.value) != 2:
+                for name in [node for node in atomtrailer.value[1:-1]]:
+                    if name.value in ret:
+                        ret.remove(name.value)
 
     last_param = None
 
@@ -63,13 +76,15 @@ def build_decorator(func: DefNode, variables: List[str]) -> str:
     index = ord('a')
     default_type = 'float64'
 
-    for variable in variables:
+    for i, variable in enumerate(variables):
         dimension = get_dimension(func, variable)
         if dimension > 0:
             variable_types = 'numba.' + default_type + '[' + ', '.join(':' * dimension) + ']'
         else:
             variable_types = 'numba.' + default_type
         types.append(variable_types)
+        if i == len(variables) - 1:
+            index = ord('a')
         chars = [chr(i) for i in range(index, index + dimension)]
         index = index + dimension
         sizes.append('(' + ', '.join(chars) + ')')
@@ -83,12 +98,10 @@ def build_function(loop: ForNode) -> DefNode:
     ret = baron[0]
     ret.value[0] = loop.copy()
 
-    ret.decorators = '@numba.guvectorize([(numba.float64[:, :], numba.float64[:, :])], \'(n, m)->(n, m)\')'
-
     variables = get_all_variables(ret)
     ret.arguments = ', '.join(variables)
 
-    print(build_decorator(ret, variables))
+    ret.decorators = build_decorator(ret, variables)
 
     return ret
 
@@ -105,7 +118,7 @@ def vectorize_loop(loop: ForNode, root: Node):
     parent = ancestor.parent
     index_on_parent = ancestor.index_on_parent
     parent.insert(index_on_parent, func)
-    for m in reversed(WARNING_MESSAGE):
+    for m in reversed(WARNING_MESSAGE + SHAPE_MESSAGE):
         parent.insert(index_on_parent, m)
 
     index = loop.index_on_parent

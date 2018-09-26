@@ -4,13 +4,15 @@ import math
 from time import time
 
 
-# WARNING!!! This code assumes that all types passed to this function are floats.
-# If the actual types are not all float64, you must edit the 'guvectorize' decorator.
+# WARNING!!!
+# If the actual types are not all float64, you must edit the corresponding  value in the 'guvectorize' decorator.
 # The order of the types in the decorator is the same as the order of the function parameters
-@numba.guvectorize([(numba.float64[:, :], numba.float64[:, :])], '(n, m)->(n, m)')
+# This function also assumes the shape of the output array
+# If the shape is not correct, it must be corrected by the user
+@numba.guvectorize([(numba.float64[:, :], numba.float64[:, :])], '(a, b)->(a, b)')
 def cuda_kernel_from_line_13(in_mat, out_mat):
-    for i in range(len(in_mat)):
-        for j in range(len(out_mat)):
+    for i in range(in_mat.shape[0]):
+        for j in range(in_mat.shape[1]):
             out_mat[i, j] = math.sin(in_mat[i, j])
 
     
