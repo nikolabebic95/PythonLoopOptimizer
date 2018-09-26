@@ -91,11 +91,6 @@ def inline_lines(scope_level_node: Node, cloned_function: DefNode) -> None:
 
 def inline_multiline_function(atomtrailer: AtomtrailersNode, cloned_function: DefNode) -> None:
     return_nodes = cloned_function.find_all('return')
-    if len(return_nodes) == 0:
-        print(cloned_function.value.dumps())
-        atomtrailer.replace(cloned_function.value.dumps())
-        return
-
     scope_level_node = get_scope_level_ancestor(atomtrailer)
 
     if scope_level_node.on_attribute != 'value':

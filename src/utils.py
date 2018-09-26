@@ -1,7 +1,8 @@
-from redbaron import Node, ForNode, DefNode, EndlNode, LineProxyList, ReturnNode, AtomtrailersNode
+from redbaron import Node, ForNode, DefNode, EndlNode, LineProxyList, ReturnNode, AtomtrailersNode, NodeList, RedBaron
 from typing import Dict
 import re
 
+from src.redbaron_helpers import fix_indentation
 
 NUMBER_REGEX = re.compile('^\s*\(?\s*(-?\d+)\s*\)?\s*$')
 VARIABLE_OR_NUMBER_REGEX = re.compile('^\s*\(?\s*(-?[a-zA-Z0-9_]+)\s*\)?\s*$')
@@ -92,7 +93,11 @@ def get_scope_level_ancestor(node: Node) -> Node:
 
 
 def insert(scope: Node, exp: Node, index: int) -> None:
-    scope.insert(index, exp)
+    if isinstance(exp.value, NodeList) and not isinstance(exp.value[0], EndlNode):
+        fix_indentation(exp, len(scope.value[0].indentation))
+        scope.insert(index, exp)
+    else:
+        scope.insert(index, exp)
 
 
 def is_recursive(func: DefNode) -> bool:
