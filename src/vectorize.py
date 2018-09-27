@@ -5,7 +5,7 @@ from src.utils import has_parent_type, get_top_level_ancestor
 
 
 WARNING_MESSAGE = [
-    '# WARNING!!!\n'
+    '# WARNING!!!\n',
     '# This code assumes that all types passed to this function are floats.\n',
     '# If the actual types are not all float64, you must edit the corresponding '
     ' value in the \'guvectorize\' decorator.\n',

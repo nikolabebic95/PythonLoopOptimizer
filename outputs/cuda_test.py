@@ -5,6 +5,7 @@ from time import time
 
 
 # WARNING!!!
+# This code assumes that all types passed to this function are floats.
 # If the actual types are not all float64, you must edit the corresponding  value in the 'guvectorize' decorator.
 # The order of the types in the decorator is the same as the order of the function parameters
 # This function also assumes the shape of the output array
