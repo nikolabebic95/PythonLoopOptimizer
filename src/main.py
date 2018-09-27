@@ -1,7 +1,6 @@
-from io import TextIOWrapper
 from redbaron import RedBaron
 import sys
-import getopt
+from optparse import OptionParser
 
 from src.optimize import optimize
 
@@ -24,41 +23,49 @@ def write_output_code(output_file: str, code: str) -> None:
             output_file_handle.flush()
 
 
-def print_usage(out_file: TextIOWrapper) -> None:
-    out_file.write("Usage: TODO\n")
-    out_file.flush()
+def print_version() -> None:
+    print("1.0.0.")
+
+
+def build_parser() -> OptionParser:
+    parser = OptionParser()
+    parser.add_option('-f', '--file', dest='filename', help='input file name')
+    parser.add_option('-o', '--output', dest='output', help='output file name')
+    parser.add_option('-v', '--version', action='store_true', dest='version', default=False,
+                      help='print version of optimizer')
+    parser.add_option('-u', '--unroll', action='store_true', dest='unroll', default=False,
+                      help='perform unroll optimization')
+    parser.add_option('-k', '--unroll_by', dest='unroll_by', default=8, help='unroll')
+    parser.add_option('-i', '--inline', action='store_true', dest='inline', default=False,
+                      help='perform inline optimization')
+    parser.add_option('-c', '--cuda', action='store_true', dest='cuda', default=False,
+                      help='perform cuda optimization')
+    return parser
 
 
 def main() -> None:
     # region Parse command line
 
-    input_file = ""
-    output_file = ""
+    parser = build_parser()
+    opts, args = parser.parse_args()
 
-    opts, args = getopt.getopt(sys.argv[1:], "i:o:h", ["input=", "output=", "help"])
+    if opts.filename is None and len(args) > 0:
+        opts.filename = args.pop(0)
 
-    for opt, arg in opts:
-        if opt in ("-h", "--help"):
-            print_usage(sys.stdout)
-            return
-        elif opt in ("-i", "--input"):
-            input_file = arg
-        elif opt in ("-o", "--output"):
-            output_file = arg
-
-    if input_file == "" and len(args) > 0:
-        input_file = args.pop(0)
-
-    if output_file == "" and len(args) > 0:
-        output_file = args.pop(0)
+    if opts.output is None and len(args) > 0:
+        opts.output = args.pop(0)
 
     # endregion
 
-    content = read_input_code(input_file)
+    if opts.version:
+        print_version()
+        exit(0)
+
+    content = read_input_code(opts.filename)
 
     root = RedBaron(content)
-    optimize(root)
-    write_output_code(output_file, root.dumps())
+    optimize(root, opts)
+    write_output_code(opts.output, root.dumps())
 
 
 if __name__ == '__main__':
