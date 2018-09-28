@@ -3,18 +3,25 @@ import time
 
 
 def lcg_random(seed, a, c, m, n):
-    for i in range(n % 10):
+    for i in range(n % 8):
+        # pragma ignore optimize
         seed = (a * seed + c) % m
-    for i in range(n % 10, n, 10):
+    for i in range(n % 8, n, 8):
+        # pragma ignore optimize
         seed = (a * seed + c) % m
+        # pragma ignore optimize
         seed = (a * seed + c) % m
+        # pragma ignore optimize
         seed = (a * seed + c) % m
+        # pragma ignore optimize
         seed = (a * seed + c) % m
+        # pragma ignore optimize
         seed = (a * seed + c) % m
+        # pragma ignore optimize
         seed = (a * seed + c) % m
+        # pragma ignore optimize
         seed = (a * seed + c) % m
-        seed = (a * seed + c) % m
-        seed = (a * seed + c) % m
+        # pragma ignore optimize
         seed = (a * seed + c) % m
     return seed
 

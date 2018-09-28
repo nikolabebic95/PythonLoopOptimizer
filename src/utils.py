@@ -1,4 +1,5 @@
-from redbaron import Node, ForNode, DefNode, EndlNode, LineProxyList, ReturnNode, AtomtrailersNode, NodeList, RedBaron
+from redbaron import Node, ForNode, DefNode, EndlNode, LineProxyList, ReturnNode, AtomtrailersNode, NodeList, RedBaron, \
+    CommentNode
 from typing import Dict
 import re
 
@@ -6,6 +7,22 @@ from src.redbaron_helpers import fix_indentation
 
 NUMBER_REGEX = re.compile('^\s*\(?\s*(-?\d+)\s*\)?\s*$')
 VARIABLE_OR_NUMBER_REGEX = re.compile('^\s*\(?\s*(-?[a-zA-Z0-9_]+)\s*\)?\s*$')
+
+PRAGMA_COMMENT = re.compile('^#\s*pragma.*$')
+IGNORE_COMMENT = re.compile('^.*ignore.*$')
+OPTIMIZE_COMMENT = re.compile('^.*optimize.*$')
+UNROLL_COMMENT = re.compile('^.*unroll.*$')
+INLINE_COMMENT = re.compile('^.*inline.*$')
+CUDA_COMMENT = re.compile('^.*cuda.*$')
+
+COMMENTS = {
+    'pragma': PRAGMA_COMMENT,
+    'ignore': IGNORE_COMMENT,
+    'optimize': OPTIMIZE_COMMENT,
+    'unroll': UNROLL_COMMENT,
+    'inline': INLINE_COMMENT,
+    'cuda': CUDA_COMMENT
+}
 
 
 def has_node_type(loop: Node, node_type: str) -> bool:
@@ -117,3 +134,27 @@ def is_recursive(func: DefNode) -> bool:
 
 def is_generator(func: DefNode) -> bool:
     return func.find('yield') is not None
+
+
+def is_comment_type(comment: CommentNode, comment_type: str) -> bool:
+    return COMMENTS[comment_type].search(comment.value) is not None
+
+
+def should_optimize(loop: Node, optimization_type: str) -> bool:
+    comments = loop.value.find_all('comment', recursive=False)
+    for comment in comments:
+        if is_comment_type(comment, 'pragma') and is_comment_type(comment, 'optimize'):
+            if is_comment_type(comment, optimization_type):
+                return True
+    return False
+
+
+def should_ignore(loop: Node, optimization_type: str = '') -> bool:
+    comments = loop.value.find_all('comment', recursive=False)
+    for comment in comments:
+        if is_comment_type(comment, 'pragma') and is_comment_type(comment, 'ignore'):
+            if optimization_type == '':
+                return True
+            if is_comment_type(comment, optimization_type):
+                return True
+    return False

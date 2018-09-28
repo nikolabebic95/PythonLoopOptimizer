@@ -4,6 +4,7 @@ import time
 
 def lcg_random(seed, a, c, m, n):
     for i in range(n):
+        # pragma ignore optimize
         seed = (a * seed + c) % m
     return seed
 
